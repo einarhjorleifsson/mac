@@ -1,0 +1,32 @@
+## Conrol file for mackerel
+0      # a1 - first age
+12     # a2 - last (plus group) age
+2013   # y1 - first year of simulation (normally the assessment year)
+2040   # y2 - last year of simulation
+1000   # iter - numer of iterations (usually something larger than 999)
+4      # f1 - lower age in fishing mortality calculation
+8      # f2 - upper age in fishing mortality calculation
+1      # nR - number age classes with unknown recruits
+0.895  # tac_y1 - the TAC in the assessment year, here realized catches
+1.350  # tac_y2 - the TAC in the advisory year
+1      # y1Bias - Stock assessment bias in the first year
+0.40   # r_cv - recruitment cv
+0.47   # r_rho - recruitment autocorrelation
+1      # r_model - recruitment model
+4.15   # r_mean parameter in the ssb-r function
+1.840  # ssb_break parameter in the ssb-r function (fixed at Bloss)
+0.20   # a_cv assessment cv
+0.30   # a_rho assessment autocorrelation
+1      # a_error assessment error type
+1      # a_bias bias in the assessment
+0.06   # w_cv weight cv
+0.45   # w_rho weight autocorrelation
+2      # w_error weight error type
+1      # w_refB weights used in the reference biomass
+0      # h_alfa buffer in the hcr rule
+0      # b_trigger trigger in the hcr rule
+1      # delay 0 if tac-decision based on numbers in the assessment year
+2      # h_number hcr model number
+1      # i_number Implementation model number
+0.0000000001 # b1 beta1 in the implemation error
+1    # b2 in the implementation error
