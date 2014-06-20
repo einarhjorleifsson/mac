@@ -11,6 +11,8 @@ hcr_set_recErrors(d, ctr)
 \item{ctr}{XXX}
 }
 \description{
-XXX
+This function is modified from the original in the fishvise package.
+In that package there was only one parameter estimate (a, b and cv). Here we have
+different parameters for each iteration, and even different recruitment model.
 }
 
