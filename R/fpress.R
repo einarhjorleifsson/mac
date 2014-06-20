@@ -14,7 +14,7 @@ hcr_read_ctr <- function (file)
   names(ctr) <- c("a1","a2","y1","y2","iter","f1","f2","nR","tac_y1","tac_y2",
                   "y1Bias","r_cv","r_rho","r_model","r_mean","ssb_break",
                   "a_cv","a_rho","a_error","a_bias","w_cv","w_rho","w_error",
-                  "w_refB","h_alpa","b_trigger","delay","h_number",
+                  "w_refB","h_alpha","h_beta","b_trigger","delay","h_number",
                   "i_number","b2","b2")
   return(ctr)
 }
@@ -618,7 +618,7 @@ hcr_management_bio <- function(y,h,bio,ssb,ctr)
   tac_next_year <- hrate * bio  # Next years TAC
   
   # Consider buffer
-  tac_next_year <- ctr$h_alpa * tac_this_year + (1 - ctr$h_alpa) * tac_next_year
+  tac_next_year <- ctr$h_alpha * tac_this_year + (1 - ctr$h_alpha) * tac_next_year
   
   X$TAC[y+1,h,] <<- tac_next_year
 
