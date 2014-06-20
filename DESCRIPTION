@@ -14,8 +14,7 @@ Depends:
     grid
 Suggests:
     knitr,
-    FLCore,
-    RSQLite
+    FLCore
 LazyData: yes
 Author: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 Maintainer: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
