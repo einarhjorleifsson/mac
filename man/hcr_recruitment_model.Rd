@@ -3,14 +3,19 @@
 \alias{hcr_recruitment_model}
 \title{hcr_recruitment_model}
 \usage{
-hcr_recruitment_model(ssb, ctr)
+hcr_recruitment_model(ssb, reccv, ctr)
 }
 \arguments{
 \item{ssb}{The true spawning stock biomass}
 
+\item{reccv}{XXX}
+
 \item{ctr}{The control file, containing the parameters}
 }
 \description{
-Model to predict the recruitment
+Model to predict the recruitment.
+
+NOTE: Only ricker model and vs. one or the other of segreg or bevholt
+reccv
 }
 

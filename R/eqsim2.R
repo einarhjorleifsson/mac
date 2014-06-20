@@ -152,7 +152,7 @@ eqsim_run2 <- function(fit,
   for (k in 1:Nmod) { resids[k,resids[k,]<lims[2,k]]=lims[2,k]}
   # end New from Simmonds 29.1.2014
   
-  if (verbose) loader(0)
+  #if (verbose) loader(0)
   
   # Looping over each F value in Fscan. For each of the Nmod SR fits 
   # (replicates), do a forward simulation during Nrun years
@@ -285,7 +285,7 @@ eqsim_run2 <- function(fit,
     lansa[i, , ] <- Lan[begin:Nrun, ]
     recsa[i, , ] <- Ny[1, begin:Nrun, ]
     
-    if (verbose) loader(i/NF)
+    #if (verbose) loader(i/NF)
   }
   
   dimnames(ssbs) <- dimnames(cats) <- 

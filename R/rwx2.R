@@ -4,6 +4,8 @@
 #' 
 #' @description read fishing mortality and stock in numbers from sam
 #' 
+#' @export
+#' 
 #' @param x Object from read.fit
 #' @param Scale A value 
 #' 
@@ -31,7 +33,15 @@ read.rbya <- function(x,Scale=1) {
   return(res)
 }
 
-
+#' @title read.rby
+#' 
+#' @description read fishing mortality and stock in numbers from sam
+#' 
+#' @export
+#' 
+#' @param x Object from read.fit
+#' @param range Boolean Not used
+#' @param Scale A value 
 read.rby <- function(x,range=FALSE,Scale=1) {  
   rby <- cbind(x$fbar,x$ssb,x$tsb)
   rby[,5:12] <- rby[,5:12]/Scale
@@ -48,7 +58,16 @@ read.rby <- function(x,range=FALSE,Scale=1) {
   return(rby)
 }
 
-# NOTE: Amended function from fishvise
+#' @title read.lowestoft
+#' 
+#' @description Read lowestoft files
+#' 
+#' @export
+#' 
+#' @param filename Filename
+#' @param val.name Character Not used
+#' @param Format Character, "List" or "Wide"
+#' 
 read.lowestoft <- function(filename, val.name,Format="List")
 {
   y <- scan(filename, skip = 2, nlines = 1, quiet = TRUE)
@@ -65,7 +84,15 @@ read.lowestoft <- function(filename, val.name,Format="List")
   return(tab)
 }
 
-
+#' @title read.ibya
+#' 
+#' @description read input by year and age
+#' 
+#' @export
+#' 
+#' @param path Character containing the path to the directory
+#' @param Scale A value 
+#' 
 read.ibya <- function(path,Scale=1) {
   oc <-  read.lowestoft(paste(path,"cn.dat",sep="/"),val.name="oC",Format = "Long")
   oc$oC <- oc$oC/Scale

@@ -156,7 +156,9 @@ hcr_set_wgtErrors <- function(d,ctr)
 
 #' @title HCR: Setup of recruitment error structure
 #' 
-#' @description XXX
+#' @description This function is modified from the original in the fishvise package.
+#' In that package there was only one parameter estimate (a, b and cv). Here we have 
+#' different parameters for each iteration, and even different recruitment model.
 #' 
 #' @export
 #' 
@@ -176,7 +178,7 @@ hcr_set_recErrors <- function(d,ctr)
   
   for (y in 2:n_years) x[y,] <- ctr$r_rho * x[y-1,] + sqrt(1 - ctr$r_rho^2) * x[y,]
   
-  x <- exp(x*ctr$r_cv)
+  x <- exp(x*ctr$ssb_pars$cv)
   for (h in 1:n_hrates) d[,h,] <- x
   
   return(d)
@@ -370,7 +372,7 @@ hcr_operating_model <- function(y, h, ctr, Fmult, nR=1) {
   # ssb <- colSums(Ny*exp(-(My*pMy+(Fy+Dy)*pFy))*maty*sWy * (0.005*sWy))
   
   
-  X$N[1,y,h,] <<- hcr_recruitment_model(ssb = ssb, ctr = ctr)
+  X$N[1,y,h,] <<- hcr_recruitment_model(ssb = ssb, reccv=X$cvR[y,h, ] ,ctr = ctr)
   
   N[1,] <- X$N[1,y,h,] # update the recruits in the current year
   # TAKE THE CATCH
@@ -390,80 +392,38 @@ hcr_operating_model <- function(y, h, ctr, Fmult, nR=1) {
 
 #' @title hcr_recruitment_model
 #' 
-#' @description Model to predict the recruitment
+#' @description Model to predict the recruitment.
 #' 
+#' NOTE: Only ricker model and vs. one or the other of segreg or bevholt
+#' reccv
 #' @export
 #' 
 #' @param ssb The true spawning stock biomass
-#' @param ctr The control file, containing the parameters
-hcr_recruitment_model <- function(ssb,ctr) 
-{
-  nsamp <- ctr$iter
-  fit <- ctr$ssb_pars
-  pR <- t(sapply(seq(nsamp), function(j) exp(match.fun(fit $ model[j]) (fit[j,], ssb)) ))
-  return(pR)
-}
-
-
-#' @title HCR recruitment model2
-#' 
-#' @description XXX
-#' 
-#' @export
-#' 
-#' @param ssb XXX
-#' @param cv XXX
-#' @param ctr XXX
-#' 
-hcr_recruitment_model2 <- function (ssb, cv, ctr) 
-  {
-  rec <- switch(ctr$r_model,
-                recruit1(ssb, ctr, cv),
-                recruit2(ssb, ctr$ssb_break, ctr$r_mean, cv))
-  return(rec)
-}
-
-
-#' @title Hockey stick recruitment model
-#' 
-#' @description XXX
-#'
-#' @export
-#' 
-#' @param ssb XXX
-#' @param ctr XXX
 #' @param reccv XXX
-recruit1 <- function (ssb, ctr, reccv) 
+#' @param ctr The control file, containing the parameters
+hcr_recruitment_model <- function(ssb,reccv,ctr) 
 {
-  rec <- ifelse(ssb >= ctr$ssb_break, 1, ssb/ctr$ssb_break) * ctr$r_mean * reccv
-  rec <- rec/exp(ctr$r_cv^2/2)
-  return(rec)
+  #nsamp <- ctr$iter
+  #fit <- ctr$ssb_pars
+  #pR <- t(sapply(seq(nsamp), function(j) exp(match.fun(fit $ model[j]) (fit[j,], ssb)) ))
+  #return(pR)
+  #hcr_recruitment_model <- function(ssb,ctr) 
+  #{
+  
+  #fit <- ctr$ssb_pars
+  #rec <- ifelse(fit$model %in% "segreg",
+  #              exp(log(ifelse(ssb >= fit$b,fit$a*fit$b,fit$a*ssb))) * reccv,
+  #              exp(log(fit$a) + log(ssb) - fit$b * ssb) * reccv)
+  #return(rec)
+  ssb <- ssb * 1e6
+  fit <- ctr$ssb_pars
+  rec <- ifelse(fit$model %in% "segreg",
+                exp(log(ifelse(ssb >= fit$b,fit$a*fit$b,fit$a*ssb))) * reccv,
+                exp(log(fit$a) + log(ssb) - fit$b * ssb) * reccv)
+  return(rec/1e6)
 }
 
-#' @title Bootstrap model
-#' 
-#' @description Just a dummy for now
-#'
-#' @export
-#' 
-#' @param ssb XXX
-#' @param ssbcut XXX
-#' @param recmean XXX
-#' @param rdev XXX
-recruit2 <- function (ssb, ssbcut, recmean, rdev) {
-  rec <- ifelse(ssb >= ssbcut, 1, ssb/ssbcut) * recmean * rdev
-  return(rec)
-}
 
-# ------------------------------------------------------------------------------
-# New versions
-
-# Na       <- d$N[,year + delay,h,]
-# Wa       <- d$bW[,year,h,]
-# SelB     <- d$selB[,year+delay,h,]
-# bio      <- colSums(Na * Wa * SelB)
-# hrate    <- HRATE[h] * hcr_ctr$iter
-# assError <- d$assError[year,h,]
 
 #' @title Observation error model
 #' 

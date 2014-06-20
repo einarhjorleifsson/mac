@@ -5,6 +5,8 @@
 #' @description Reads sam configuration file. Used by read.fit function
 #' (see below). This function originally in scr/common.R
 #' 
+#' @export
+#' 
 #' @param clonefile XXX
 read.conf <- function(clonefile){
   lin <- readLines(clonefile)
@@ -26,6 +28,8 @@ read.conf <- function(clonefile){
 #' @description Seems like the big mother.
 #' 
 #' This function originally in scr/common.R
+#' 
+#' @export
 #' 
 #' @param file Name of file
 #' @param reduced Boolean 
