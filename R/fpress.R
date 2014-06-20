@@ -421,6 +421,7 @@ hcr_recruitment_model <- function(ssb,reccv,ctr)
                 exp(log(ifelse(ssb >= fit$b,fit$a*fit$b,fit$a*ssb))) * reccv,
                 exp(log(fit$a) + log(ssb) - fit$b * ssb) * reccv)
   return(rec/1e6)
+  
 }
 
 
