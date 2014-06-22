@@ -14,7 +14,7 @@ hcr_operating_model(y, h, ctr, Fmult, nR = 1)
 
 \item{Fmult}{XXX}
 
-\item{nR}{XXX}
+\item{nR}{Not used}
 }
 \description{
 XXX

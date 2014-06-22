@@ -10,7 +10,7 @@ hcr_observation_error(y, h, Fmult, ctr)
 
 \item{h}{XXX}
 
-\item{Fmult}{XXX}
+\item{Fmult}{XXX. Why is this here???}
 
 \item{ctr}{XXX}
 }
