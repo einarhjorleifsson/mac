@@ -345,7 +345,7 @@ hcr_implementation_model_1 <- function () #(TACy2, TACy1, beta1, beta2)
 #' @param h XXX
 #' @param ctr ctr_rec
 #' @param Fmult XXX
-#' @param nR XXX
+#' @param nR Not used
 
 hcr_operating_model <- function(y, h, ctr, Fmult, nR=1) {
   
@@ -445,6 +445,17 @@ hcr_observation_error <- function(y, h, Fmult,ctr) {
   assError <- X$assError[ y + delay, h,]
   
   N   <-    X$N[,y + delay, h,]
+  # Note: In step above we have the problem of not having the
+  #       incoming recruit assumption! I.e. it is currently 
+  #       set to -1. This is most likely because the 
+  #       delay = 1. Test if this happens if delay=0
+  # Here we could put in the GM assumption of Age 0 fish
+  # Question is: Should it be the current GM or should it be
+  #              updated each year.
+  # Note: We need to think of something with respect to the
+  #       starting years
+  N[1,] <- ctr$r_mean
+  
   bW  <-   X$bW[,y + delay, h,]
   sB  <- X$selB[,y + delay, h,]
   bio <- colSums(N * bW * sB)
@@ -521,7 +532,7 @@ hcr_management_effort <- function(hrate_hat,ssb_hat,Btrigger)
 #' specification. 
 #'
 
-hcr_management_fmort <- function(y,h,hrate,ssb,ctr)
+hcr_management_fmort <- function(y, h, Fmult,ctr)
 {
   selF     <- X$selF[,y + ctr$delay,h,]
   selD     <- X$selD[,y + ctr$delay,h,]

@@ -61,10 +61,10 @@ mac_run_the_stuff <- function(dat,ctr) {
   # the other years 
   for (h in 1:length(HRATE)) {
     for(y in 2:(ctr$y2 - ctr$y1)) {
-      switch(ctr$i_number,
-             dummy <- hcr_implementation_model_1(),
-             stop("implementation model 2 is available for developement"),
-             stop(" and whatever more ..."))
+      #switch(ctr$i_number,
+      #       dummy <- hcr_implementation_model_1(),
+      #       stop("implementation model 2 is available for developement"),
+      #       stop(" and whatever more ..."))
       Fmult <- hcr_TAC_to_Fmult(y, h)
       hcr_operating_model(y, h, ctr, Fmult, nR=1)
       hat <- hcr_observation_error(y,h,Fmult,ctr)
