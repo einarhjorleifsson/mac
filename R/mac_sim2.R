@@ -136,7 +136,8 @@ mac_run_the_stuff2 <- function(dat,ctr) {
      # Do predictions for next year and calculate the TAC
       switch(ctr$h_number,
              stop("Not implemented yet"),
-             hcr_management_fmort_pred(y,h,ctr))
+             hcr_management_fmort_pred(y,h,ctr),
+             hcr_management_bio_pred(y,h,ctr))
     }
   }
   
