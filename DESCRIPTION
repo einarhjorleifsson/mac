@@ -11,7 +11,8 @@ Depends:
     lubridate,
     reshape2,
     ggplot2,
-    grid
+    grid,
+    R2admb
 Suggests:
     knitr,
     FLCore
