@@ -1,13 +1,17 @@
 # Amended fishvise functions
 
-#' @title read.rbya
+#' @title Reads the stock in numbers and fishing mortality
 #' 
-#' @description read fishing mortality and stock in numbers from sam
+#' @description Reads fishing mortality and stock in numbers by year and age
+#' from \code{sam}.
 #' 
 #' @export
 #' 
+#' @return Returns a \code{data.frame} containing the following items:
+#' 
 #' @param x Object from read.fit
-#' @param Scale A value 
+#' @param Scale A numerical value. If 1 (default) returns the stock in numbers
+#' as in the input file.
 #' 
 read.rbya <- function(x,Scale=1) {
   
@@ -33,13 +37,16 @@ read.rbya <- function(x,Scale=1) {
   return(res)
 }
 
-#' @title read.rby
+#' @title Reads the stock summary values
 #' 
-#' @description read fishing mortality and stock in numbers from sam
+#' @description Reads the stock summary numbers by year from \code{sam}.
+#' 
 #' 
 #' @export
-#' 
-#' @param x Object from read.fit
+#'
+#' @return A \code{data.frame} containing the following:
+#'  
+#' @param x Object from function \code{read.fit}.
 #' @param range Boolean Not used
 #' @param Scale A value 
 read.rby <- function(x,range=FALSE,Scale=1) {  
