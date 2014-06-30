@@ -1,13 +1,123 @@
 ---
-title: Some doodles related to the mac-package
+title: "Some doodles related to the mac-package"
+output:
+  html_document:
+    toc: yes
 ---
 ***
-**some bold text**
+# The thinking
 
-A webpage template
+... some nice text here, explaining the objectives of the code snippet.
 
+# The coding
 
+## The stuff required
 
-![gagnakvörn C. Hammer](images/gagnakvorn.png)
+1. Install the library if not already done:
+```{r, message=FALSE, error=FALSE, eval=FALSE}
+library(devtools)
+install_github("mac","einarhjorleifsson")
+```
 
-http://www.hafro.is/....
+2. Load the libraries:
+```{r, message=FALSE, error=FALSE}
+library(mac)
+library(knitr)
+library(FLSAM)
+library(RColorBrewer)
+```
+
+3. Compile the ADMB code, if not already done. The srest.tpl code comes with the mac-library. The function compile_admb2 is a wrapper around functions in the R2admb package that:
+  + Copies the srest.tpl code into the current working directory
+  + Compiles the code and leaves a file named srest (srest.exe on Windows) in the current working directory.
+  + Clean the intermediate files
+  
+```{r, message=FALSE, error=FALSE, eval=FALSE}
+compile_admb2()
+```
+
+## Doing a single run
+
+1. Make the data input file for the srest program:
+  + Read in the sam output into R (read.fit)
+  + Extract the spawning stock and recruitment estimates (read.rby)
+  + Generate a file in the current working directory that contains the data and model specifications.
+```{r, message=FALSE, error=FALSE, eval=FALSE}
+sr <- rby[rby$year < 2012,c("year","r","ssbest")]
+names(sr) <- c("year","r","ssb")
+mac_srest_cat("Mackerel",
+              y1=min(sr$year),y2=max(sr$year),
+              aR=0,aP=12,
+              opt_sr_model = 3,opt_pen = 1,
+              r = sr$r,ssb=sr$ssb,year=sr$year)
+```
+
+2. Run the srest program
+
+```{r, message=FALSE, error=FALSE}
+run_admb("srest")
+```
+
+3. Read the result into R
+```{r, message=FALSE, error=FALSE, results='asis'}
+x <- read.table("srest.std",header=TRUE)
+kable(x)
+```
+
+## Running a loop
+The solution is to wrap steps 1-3 above into a loop and store the resulting output from each run in an R-object.
+1. Generate the mcmc realizations
+```{r, message=FALSE, error=FALSE}
+nits        <- 250  # Small test run
+Mac.sam@control <- Mac.ctrl
+stk <- monteCarloStock(Mac,Mac.sam,nits,run.dir="~/ass/2014/mac/tmp")
+x <- melt(ssb(stk))[,c("iter","year","value")]
+names(x)[3] <- "ssb"
+y <- melt(rec(stk))[,c("iter","year","value")]
+names(y)[3] <- "rec"
+sr_data <- join(y,x)
+sr_data <- sr_data[sr_data$year %in% 1990:2011,]
+
+PAIRED <- rep(brewer.pal(12,"Paired"),100)
+n <- length(unique(sr_data$year))
+ggplot(sr_data)  + 
+  geom_point(aes(ssb/1e6,rec/1e6,col=factor(year)),alpha=0.5,size=4) +
+  scale_colour_manual(values=PAIRED[1:n]) +
+  theme(legend.position="none") +
+  geom_point(data=rby[rby$year %in% 1990:2011,],
+             aes(ssbest,r,col=factor(year)),size=10) +
+  geom_text(data=rby[rby$year %in% 1990:2011,],
+             aes(ssbest,r,label=str_sub(year,3,4))) +
+  geom_path(data=rby[rby$year %in% 1990:2011,],
+            aes(ssbest,r)) +
+  labs(x="ssb",y="rec") +
+  xlim(0,6.5) + ylim(0,20)
+```
+
+2. The loop
+```{r, message=FALSE, error=FALSE}
+for (i in 1:nits) {
+  sr <- sr_data[sr_data$iter == i,]
+  mac_srest_cat("Mackerel",
+              y1=min(sr$year),y2=max(sr$year),
+              aR=0,aP=12,
+              opt_sr_model = 3,opt_pen = 1,
+              r = sr$rec,ssb=sr$ssb,year=sr$year)
+  run_admb("srest")
+  x <- read.table("srest.std",header=TRUE)
+  x$iter <- i
+  if(i == 1) {
+    res <- x
+    } else {
+      res <- rbind(res,x)
+      }
+  }
+```
+
+3. A look at the results
+```{r, message=FALSE, error=FALSE}
+ggplot(res,aes(value)) + geom_density() +
+  facet_wrap(~ name,scale="free")
+ggplot(res,aes(std.dev)) + geom_density() +
+  facet_wrap(~ name,scale="free")
+```

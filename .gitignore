@@ -1,3 +1,8 @@
 .Rproj.user
 .Rhistory
 .RData
+admodel*
+srest*
+variance
+eigv.rpt
+fmin.log

@@ -151,12 +151,195 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <h1 class="title">Some doodles related to the mac-package</h1>
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#the-thinking">The thinking</a></li>
+<li><a href="#the-coding">The coding</a><ul>
+<li><a href="#the-stuff-required">The stuff required</a></li>
+<li><a href="#doing-a-single-run">Doing a single run</a></li>
+<li><a href="#running-a-loop">Running a loop</a></li>
+</ul></li>
+</ul>
+</div>
 
 <hr />
-<p><strong>some bold text</strong></p>
-<p>A webpage template</p>
-<p><img src="images/gagnakvorn.png" alt="gagnakvörn C. Hammer" /></p>
-<p><a href="http://www.hafro.is/">http://www.hafro.is/</a>….</p>
+<div id="the-thinking" class="section level1">
+<h1>The thinking</h1>
+<p>… some nice text here, explaining the objectives of the code snippet.</p>
+</div>
+<div id="the-coding" class="section level1">
+<h1>The coding</h1>
+<div id="the-stuff-required" class="section level2">
+<h2>The stuff required</h2>
+<ol style="list-style-type: decimal">
+<li>Install the library if not already done:</li>
+</ol>
+<pre class="r"><code>library(devtools)
+install_github(&quot;mac&quot;,&quot;einarhjorleifsson&quot;)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Load the libraries:</li>
+</ol>
+<pre class="r"><code>library(mac)
+library(knitr)
+library(FLSAM)</code></pre>
+<pre><code>## Warning: replacing previous import by &#39;utils::tail&#39; when loading &#39;FLSAM&#39;</code></pre>
+<pre class="r"><code>library(RColorBrewer)</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Compile the ADMB code, if not already done. The srest.tpl code comes with the mac-library. The function compile_admb2 is a wrapper around functions in the R2admb package that:</li>
+</ol>
+<ul>
+<li>Copies the srest.tpl code into the current working directory</li>
+<li>Compiles the code and leaves a file named srest (srest.exe on Windows) in the current working directory.</li>
+<li>Clean the intermediate files</li>
+</ul>
+<pre class="r"><code>compile_admb2()</code></pre>
+</div>
+<div id="doing-a-single-run" class="section level2">
+<h2>Doing a single run</h2>
+<ol style="list-style-type: decimal">
+<li>Make the data input file for the srest program:</li>
+</ol>
+<ul>
+<li>Read in the sam output into R (read.fit)</li>
+<li>Extract the spawning stock and recruitment estimates (read.rby)</li>
+<li>Generate a file in the current working directory that contains the data and model specifications.</li>
+</ul>
+<pre class="r"><code>sr &lt;- rby[rby$year &lt; 2012,c(&quot;year&quot;,&quot;r&quot;,&quot;ssbest&quot;)]
+names(sr) &lt;- c(&quot;year&quot;,&quot;r&quot;,&quot;ssb&quot;)
+mac_srest_cat(&quot;Mackerel&quot;,
+              y1=min(sr$year),y2=max(sr$year),
+              aR=0,aP=12,
+              opt_sr_model = 3,opt_pen = 1,
+              r = sr$r,ssb=sr$ssb,year=sr$year)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Run the srest program</li>
+</ol>
+<pre class="r"><code>run_admb(&quot;srest&quot;)</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Read the result into R</li>
+</ol>
+<pre class="r"><code>x &lt;- read.table(&quot;srest.std&quot;,header=TRUE)
+kable(x)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">index</th>
+<th align="left">name</th>
+<th align="right">value</th>
+<th align="right">std.dev</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">ap</td>
+<td align="right">5.509e-01</td>
+<td align="right">4.700e-02</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="left">bp</td>
+<td align="right">8.817e-01</td>
+<td align="right">2.020e-02</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="left">a</td>
+<td align="right">8.504e-01</td>
+<td align="right">7.250e-02</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="left">b</td>
+<td align="right">2.497e+06</td>
+<td align="right">5.716e+04</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="left">sigR</td>
+<td align="right">3.967e-01</td>
+<td align="right">0.000e+00</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="left">scor</td>
+<td align="right">2.702e-01</td>
+<td align="right">3.700e-03</td>
+</tr>
+<tr class="odd">
+<td align="right">7</td>
+<td align="left">g</td>
+<td align="right">2.832e+03</td>
+<td align="right">0.000e+00</td>
+</tr>
+<tr class="even">
+<td align="right">8</td>
+<td align="left">neglnL</td>
+<td align="right">1.088e+01</td>
+<td align="right">0.000e+00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="running-a-loop" class="section level2">
+<h2>Running a loop</h2>
+<p>The solution is to wrap steps 1-3 above into a loop and store the resulting output from each run in an R-object. 1. Generate the mcmc realizations</p>
+<pre class="r"><code>nits        &lt;- 250  # Small test run
+Mac.sam@control &lt;- Mac.ctrl
+stk &lt;- monteCarloStock(Mac,Mac.sam,nits,run.dir=&quot;~/ass/2014/mac/tmp&quot;)
+x &lt;- melt(ssb(stk))[,c(&quot;iter&quot;,&quot;year&quot;,&quot;value&quot;)]
+names(x)[3] &lt;- &quot;ssb&quot;
+y &lt;- melt(rec(stk))[,c(&quot;iter&quot;,&quot;year&quot;,&quot;value&quot;)]
+names(y)[3] &lt;- &quot;rec&quot;
+sr_data &lt;- join(y,x)
+sr_data &lt;- sr_data[sr_data$year %in% 1990:2011,]
+
+PAIRED &lt;- rep(brewer.pal(12,&quot;Paired&quot;),100)
+n &lt;- length(unique(sr_data$year))
+ggplot(sr_data)  + 
+  geom_point(aes(ssb/1e6,rec/1e6,col=factor(year)),alpha=0.5,size=4) +
+  scale_colour_manual(values=PAIRED[1:n]) +
+  theme(legend.position=&quot;none&quot;) +
+  geom_point(data=rby[rby$year %in% 1990:2011,],
+             aes(ssbest,r,col=factor(year)),size=10) +
+  geom_text(data=rby[rby$year %in% 1990:2011,],
+             aes(ssbest,r,label=str_sub(year,3,4))) +
+  geom_path(data=rby[rby$year %in% 1990:2011,],
+            aes(ssbest,r)) +
+  labs(x=&quot;ssb&quot;,y=&quot;rec&quot;) +
+  xlim(0,6.5) + ylim(0,20)</code></pre>
+<pre><code>## Warning: Removed 2 rows containing missing values (geom_point).</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-7.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" width="672" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li>The loop</li>
+</ol>
+<pre class="r"><code>for (i in 1:nits) {
+  sr &lt;- sr_data[sr_data$iter == i,]
+  mac_srest_cat(&quot;Mackerel&quot;,
+              y1=min(sr$year),y2=max(sr$year),
+              aR=0,aP=12,
+              opt_sr_model = 3,opt_pen = 1,
+              r = sr$rec,ssb=sr$ssb,year=sr$year)
+  run_admb(&quot;srest&quot;)
+  x &lt;- read.table(&quot;srest.std&quot;,header=TRUE)
+  x$iter &lt;- i
+  if(i == 1) {
+    res &lt;- x
+    } else {
+      res &lt;- rbind(res,x)
+      }
+  }</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>A look at the results</li>
+</ol>
+<pre class="r"><code>ggplot(res,aes(value)) + geom_density() +
+  facet_wrap(~ name,scale=&quot;free&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-91.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" width="672" /></p>
+<pre class="r"><code>ggplot(res,aes(std.dev)) + geom_density() +
+  facet_wrap(~ name,scale=&quot;free&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-92.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" width="672" /></p>
+</div>
+</div>
 
 </div>
 </div>
