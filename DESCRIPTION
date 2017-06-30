@@ -1,8 +1,8 @@
 Package: mac
 Type: Package
 Title: Miscalaneous set of functions related fish stock assessment work
-Version: 0.0.1
-Date: 2014-06-19
+Version: 0.0.2
+Date: 2017-06-30
 Description: Mackerel HCR simulation
 VignetteBuilder: knitr
 Depends:
@@ -20,3 +20,4 @@ LazyData: yes
 Author: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 Maintainer: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 License: GPL-2
+RoxygenNote: 6.0.1
